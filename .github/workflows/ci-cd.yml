@@ -21,9 +21,14 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
 
+      - name: 🔧 Set lowercase GitHub owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> $GITHUB_ENV
+        env:
+          OWNER: ${{ github.repository_owner }}
+
       - name: 🐳 Build and Push FastAPI Backend
         run: |
-          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           IMAGE_BACKEND="ghcr.io/${OWNER_LC}/fastapi-backend:latest"
           echo "Building image: $IMAGE_BACKEND"
           docker build -t $IMAGE_BACKEND ./backend
@@ -31,7 +36,6 @@ jobs:
 
       - name: 🐳 Build and Push React Frontend
         run: |
-          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           IMAGE_FRONTEND="ghcr.io/${OWNER_LC}/react-frontend:latest"
           echo "Building image: $IMAGE_FRONTEND"
           docker build -t $IMAGE_FRONTEND ./frontend
